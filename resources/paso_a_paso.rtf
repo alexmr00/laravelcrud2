@@ -1,0 +1,226 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang3082{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang10 Buscamos la instalaci\'f3n en la p\'e1gina de laravel\par
+Instalar composer de {{\field{\*\fldinst{HYPERLINK https://getcomposer.org/ }}{\fldrslt{https://getcomposer.org/\ul0\cf0}}}}\f0\fs22\par
+Comprobar que funciona poniendo "composer" en el shell. Comprobar en el PATH la ruta de isntalaci\'f3n....\par
+Instalar el instalador de laravel: composer global require laravel/installer\par
+En una carpeta de proyectos laravel (ejecutar en la shell): laravel new crud\par
+Entramos en la carpeta "crud" y abrimos el visual studio code con: code .\par
+Git. Inicializamos en vsCode el repositorio, hago el primer commit en el icono (check). Creo una cuenta en github.com y lo sincronizo: git remote add origin {{\field{\*\fldinst{HYPERLINK https://github.com/dam2ourense/crud-laravel.git }}{\fldrslt{https://github.com/dam2ourense/crud-laravel.git\ul0\cf0}}}}\f0\fs22\par
+Le doy a la nube de la barra inferior azul y compruebo que el c\'f3digo ha subido a github.com\par
+Pruebo como funciona el MDBootstrap .....\par
+Creo en public la carpeta mdbbootstrap411 con el contenido descargado en MDBootstrap\par
+El controlador routes>web.php nos deriva a welcome que est\'e1 en resources>views>welcome.blade.php\par
+Creamos una carpet en views llamada layouts con los fichero main.blade.php, navbar.blade.php y footer.blade.php\par
+Copiamos el index del mdBootstrap en main.blade.php y adaptamos las referncias\par
+<link rel="stylesheet" href="\{\{ asset('mdbootstrap411/css/bootstrap.min.css') \}\}">\par
+  <!-- Material Design Bootstrap -->\par
+  <link rel="stylesheet" href="\{\{ asset('mdbootstrap411/css/mdb.min.css') \}\}">\par
+  <!-- Your custom styles (optional) -->\par
+  <link rel="stylesheet" href="\{\{ asset('mdbootstrap411/css/style.css') \}\}">\par
+<script type="text/javascript" src="\{\{ asset('mdbootstrap411/js/jquery.min.js') \}\}"></script>\par
+  <!-- Bootstrap tooltips -->\par
+  <script type="text/javascript" src="\{\{ asset('mdbootstrap411/js/popper.min.js') \}\}"></script>\par
+  <!-- Bootstrap core JavaScript -->\par
+  <script type="text/javascript" src="\{\{ asset('mdbootstrap411/js/bootstrap.min.js') \}\}"></script>\par
+  <!-- MDB core JavaScript -->\par
+  <script type="text/javascript" src="\{\{ asset('mdbootstrap411/js/mdb.min.js') \}\}"></script>\par
+\par
+Si en el welcome.blade.php ponemos una sola l\'ednea:\par
+@extends('layouts.main') \par
+podemos ver los botones o lo que se tenga en el cuerpo del main.blade.php\par
+En el main.blade.php cambiamos los botones por:\par
+  <!-- Start your project here-->  \par
+\par
+    @include('layouts.navbar')\par
+    @yield('content')\par
+    @include('layouts.footer')\par
+\par
+  <!-- End your project here-->\par
+Completamos la p\'e1gina welcome.blade.php con este c\'f3digo\par
+@extends('layouts.main')\par
+@section('content')\par
+<h1> P\'e1gina HOME </h1>\par
+@endsection\par
+\par
+Copiamos un navbar y un footer de MDBootstrap y los pegamos en navbar.blade.php y footer.blade.php\par
+Creo en el phpMyAdmin una BBDD "laravel-crud" con el usuario "laravel-crud-user" y la pass "abc123."\par
+Establezco esos par\'e1metros en el fichero .env\par
+DB_DATABASE=laravel-crud\par
+DB_USERNAME=laravel-crud-user\par
+DB_PASSWORD=abc123.\par
+Commit====> navbar-footer-envBBDD\par
+Genero un controlador con >php artisan make:controller StudentController\par
+Lo edito en app>http>Controllers y creo el m\'e9to index\par
+class StudentController extends Controller\par
+\{\par
+    public function index()\{\par
+        return view('welcome');\par
+    \}\par
+\}\par
+Y ahora comento/sustitiyo la ruta al raiz en routes/web.php por este c\'f3digo\par
+Route::get('/','StudentController@index' )->name('home');\par
+Commit======>previo creaci\'f3n tablas\par
+Creamos un modelo con >php artisan make:model Students -m\par
+En database->Migrations crea un fichero y definimos los campos de la tabla Students:\par
+        Schema::create('students', function (Blueprint $table) \{\par
+            $table->bigIncrements('id');\par
+            $table->string('nombre');\par
+            $table->string('apellidos');\par
+            $table->string('email');\par
+            $table->string('telefono');\par
+            $table->timestamps();\par
+Migramos todos los esquemas con > php artisan migrate y comprobamos el resultado en MySql\par
+Commit ====> Migraci\'f3n Student hecha\par
+Creo esta ruta en web.php\par
+Route::get('/create','StudentController@create' )->name('create');\par
+Implemento un controlador de pruebas\par
+ public function create()\{\par
+        return "hola voy a crear algo grande";\par
+    \}\par
+Y modifico m\'ednimamente el navbar.blade.php\par
+  <a class="nav-link" href="\{\{url('/')\}\}">Home\par
+          <span class="sr-only">(current)</span>\par
+        </a>\par
+      </li>\par
+      <li class="nav-item">\par
+        <a class="nav-link" href="\{\{url('/create')\}\}">A\'f1adir</a>\par
+Modifico la funci\'f3n create en StudentController:\par
+  public function create()\{\par
+        //return "hola voy a crear algo grande";\par
+        return view ('create');\par
+    \}\par
+Creo una p\'e1gina view.blade.php y pego la base de la welcome.blade.php y la secci\'f3n de MDbootstrap Forms (BASIC EXAMPLES) Register / Sign up form\par
+Elimino los campos que no interesan, cambio el placeholder y a\'f1ado camopo name para referenciarlo posteriormente....\par
+commit ==> form create parcialmente iniciado\par
+Creo el m\'e9todo en el StudentController, valido y grabo en la base de datos\par
+public function store (Request $request)\{\par
+        $this->validate($request,[\par
+            'nombre' => 'required',\par
+            'email' => 'required',\par
+            'telefono' => 'required'\par
+        ]  );\par
+\par
+    $estudiante = new Students;\par
+    $estudiante->nombre = $request->nombre;\par
+    $estudiante->apellidos = $request->apellidos;\par
+    $estudiante->email = $request->email;\par
+    $estudiante->telefono = $request->telefono;\par
+    $estudiante->save();\par
+    return redirect (route('home'));\par
+Previamente hay que incluir use App\\Students;\par
+Y por temas de seguridad laravel, para que solamente procese los formularios generados por \'e9l, hay que meter un \{\{ csrf_field() \}\} al principio del formulario en create.blade.php\par
+commit ==> CONSEGUIMO GUARDAR EN LA BBDD\par
+A\'f1ado un alert en el welcome.blade.php para saber que insertamos correctamente\par
+@if (session('successMsg'))\par
+\par
+<div class="alert alert-success" role="alert">\par
+        \{\{session('successMsg')\}\}\par
+</div>\par
+\par
+@endif\par
+A\'f1ado un alert en el create.blade.php  para ver errores de validaci\'f3n\par
+@if ($errors->any())\par
+    @foreach ($errors->all() as $error)\par
+        <div class="alert alert-danger" role="alert">\par
+        \{\{$error\}\}\par
+        </div>\par
+    @endforeach\par
+@endif\par
+commit ==> creaci\'f3n registro y mensajes de ok o validacion\par
+Para la consulta de todos los registros en la p\'e1gina home, buscamos en MDBootstrap una tabla que se adapte, pegamos el contenido en welcome.blade.php, adaptamos el encabezado, y repetimos las tuplas\par
+ <tr>\par
+      <th scope="col">#</th>\par
+      <th scope="col">Nombre</th>\par
+      <th scope="col">Apellidos</th>\par
+      <th scope="col">E-mail</th>\par
+      <th scope="col">Tel\'e9fono</th>\par
+    </tr>\par
+  </thead>\par
+  <tbody>\par
+  @foreach ($estudiantes as $estudiante)\par
+    <tr>\par
+      <th scope="row">\{\{$estudiante->id\}\}</th>\par
+      <td>\{\{$estudiante->nombre\}\}</td>\par
+      <td>\{\{$estudiante->apellidos\}\}</td>\par
+      <td>\{\{$estudiante->email\}\}</td>\par
+      <td>\{\{$estudiante->telefono\}\}</td>\par
+    </tr> \par
+  @endforeach\par
+Y en el controlador cambiamos el index, para pasar todos los Estudiantes:\par
+        $estudiantes = Students::all();\par
+        return view('welcome',compact('estudiantes'));\par
+Preparamos las acciones Editar y Borrar consultando el icono que nos gusta de la funte awesome que tenemos (se ve en el main.blade.php y se busca en internet)\par
+ <td>\par
+      <a class="btn btn-raised btn-primary btn-sm" href=""> <i class="fas fa-edit"></i></a>\par
+      <a class="btn btn-raised btn-danger btn-sm" href=""> <i class="fas fa-trash-alt"></i></a>\par
+      </td>\par
+Commit ===> iconos editar-borrar\par
+Para modificar creamos las rutas:\par
+Route::get('/edit/\{id\}','StudentController@edit' )->name('edit');\par
+Route::post('/update/\{id\}','StudentController@update' )->name('update');\par
+Creamos el controlador\par
+    public function edit($id)\{\par
+        $estudiante = Students::find($id);\par
+        return view ('edit',compact('estudiante'));\par
+    \}\par
+Creamos la pagina edit.blade.php (la copiamos de create) y modificamos el encabezado del form\par
+<form class="text-center border border-light p-5" action="\{\{route('update',$estudiante->id) \}\}" method="POST">\par
+Y ponemos la propiedad value a todos los campos....\par
+\par
+Por \'faltimo creamos el m\'e9todo update (copiando buena parte del store)\par
+\par
+   public function update (Request $request, $id)\{\par
+        $this->validate($request,[\par
+            'nombre' => 'required',\par
+            'email' => 'required',\par
+            'telefono' => 'required'\par
+        ]  );\par
+\par
+    $estudiante = Students::find($id);\par
+    $estudiante->nombre = $request->nombre;\par
+    $estudiante->apellidos = $request->apellidos;\par
+    $estudiante->email = $request->email;\par
+    $estudiante->telefono = $request->telefono;\par
+    $estudiante->save();\par
+    return redirect (route('home'))->with('successMsg','Estudiante modificado');\par
+    \}\par
+commit ===> alta, consulta y edici\'f3n\par
+Para borrar de forma simple bastar\'eda, crear una ruta:\par
+Route::get('/delete/\{id\}','StudentController@delete' )->name('delete');\par
+Referenciar la ruta en el bot\'f3n de borrado \par
+ href="\{\{route('delete',$estudiante->id)\}\}"> \par
+Y crear el controlador\par
+    public function delete($id)\{\par
+        $estudiante = Students::find($id);\par
+        $estudiante->delete();\par
+        return redirect  (route('home'))->with('successMsg','Estudiante borrado');\par
+    \}\par
+commit ==> borrado b\'e1sico\par
+Para hacer un borrado m\'e1s complejo (con confirmaci\'f3n y m\'e9todo http:delete) cambiamos la  ruta\par
+Route::delete('/delete/\{id\}','StudentController@delete' )->name('delete');\par
+Y en el welcome, metemos c\'f3digo javascript.....\par
+            <form method="POST" id="delete-form-\{\{$estudiante->id\}\}" action="\{\{route('delete',$estudiante->id)\}\}" style="display: none;" >\par
+        \{\{csrf_field()\}\}\par
+        \{\{method_field('delete')\}\}\par
+      </form>\par
+      <button onclick="if (confirm('Estas seguro de borrar?'))\{   \par
+        document.getElementById('delete-form-\{\{$estudiante->id\}\}').submit();  \par
+        \}else\{\par
+            event.preventDefault();\par
+        \}      \par
+      "      \par
+      class="btn btn-raised btn-danger btn-sm" > <i class="fas fa-trash-alt"></i>\par
+      \par
+      \par
+      </button>\par
+commit ==> operaciones b\'e1sicas completadas\par
+Para paginaci\'f3n ponemos en el controlador el n\'famero de registros por p\'e1gina\par
+$estudiantes = Students::paginate(5);\par
+Y en la vista welcome donde queramos tener el control:\par
+\{\{$estudiantes->links()\}\}\par
+commit ==> fin\par
+\par
+}
+ 
